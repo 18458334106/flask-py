@@ -6,7 +6,7 @@ from utils.entity import r
 
 # 创建 Flask 实例
 app = Flask(__name__)
-
+CORS(app, origins='*')
 """----------------------------------------
                 初始化 Flask 
 -------------------------------------------"""
@@ -36,6 +36,7 @@ def hello():
 -------------------------------------------"""
 @app.route('/login', methods=['POST'])
 def user_login():
+    request.headers['Access-Control-Allow-Origin'] = '*'
     reqJSONData = request.get_json(silent=True)  # 允许 请求体的 raw 为空
     # 1. 处理请求参数为空
     if not reqJSONData: return r(code=401, msg='注册失败, 请求参数为空')
@@ -58,4 +59,3 @@ def user_login():
 
 if __name__ == '__main__':
     app.run()
-    CORS(app)
