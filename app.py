@@ -1,8 +1,6 @@
 from flask import Flask, request, session
-from typing import List
-from utils.mysql import db
+from utils.mysql import db,supabase
 from api.user.user import User
-from utils.utils import model_list_to_dict  # 自定义的 utils 工具包
 import pymysql
 from utils.entity import r
 
@@ -48,14 +46,15 @@ def user_login():
     if not all([username, password]):
         return r(code=401, msg='登录, 缺少请求参数')
     # 3. 验证账号和密码
-    user = User.query.filter_by(name=username,password=password).first()
+    # user = User.query.filter_by(name=username,password=password).first()
+    user = supabase.table('sys_user').select('*').eq('username',username).eq('password',password).execute().data
     # 4. 用户不存在, 直接返回
     if not user:
         return r(code=404, msg='用户名或密码错误')
     else:
         # 5. 保存用户状态到 session
-        session['user_info'] = user.dict()
-        return r(msg='登录成功', data=user.dict())
+        session['user_info'] = user
+        return r(msg='登录成功', data=user)
 
 if __name__ == '__main__':
     app.run()
