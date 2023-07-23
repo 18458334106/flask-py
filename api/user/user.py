@@ -11,7 +11,6 @@ class User(db.Model):
     password = db.Column(db.String, name='password')
 
     def dict(self):
-        print(self)
         return {
             'id': self.id,
             'name': self.name,
