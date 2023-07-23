@@ -1,6 +1,6 @@
 from flask import Flask, request, session
 from utils.mysql import db,supabase
-from api.user.user import User
+from flask_cors import CORS
 import pymysql
 from utils.entity import r
 
@@ -58,4 +58,4 @@ def user_login():
 
 if __name__ == '__main__':
     app.run()
-
+    CORS(app)
