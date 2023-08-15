@@ -56,5 +56,10 @@ def user_login():
         session['user_info'] = user
         return r(msg='登录成功', data=user)
 
+@app.route('/user/list', methods=['POST','get'])
+def userList():
+    user = supabase.table('sys_user').select('*').execute().data
+    return user
+
 if __name__ == '__main__':
     app.run()
