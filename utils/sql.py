@@ -1,6 +1,3 @@
-from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
-
 from supabase import create_client, Client
 
 url:str = 'https://nyuvdcewxadfcquchcgy.supabase.co'
