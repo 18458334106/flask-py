@@ -6,7 +6,7 @@ from api.user.user import user_bp
 # 创建 Flask 实例
 app = Flask(__name__)
 app.register_blueprint(user_bp)
-
+app.config['SECRET_KEY'] = 'I LIKE U'
 CORS(app, supports_credentials=True,resources=r'/*')
 
 @app.route('/', methods=['GET'])
