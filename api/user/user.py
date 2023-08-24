@@ -27,5 +27,9 @@ def user_login():
 
 @user_bp.route('/list', methods=['POST','get'])
 def userList():
-    user = supabase.table('sys_user').select('*').execute().data
-    return user
+    userInfo = session.get('user_info')
+    if not userInfo:
+        return r(msg='暂未登录')
+    else:
+        user = supabase.table('sys_user').select('*').execute().data
+        return user
