@@ -84,7 +84,7 @@ def user_info():
             description: 失败
         """
     userInfo = get_jwt_identity()
-    return r(msg='',data=userInfo)
+    return r(msg='',data={"username":userInfo['username'],"name":userInfo['name'],"id":userInfo['id']})
 
 @user_bp.route('/list', methods=['GET'])
 @jwt_required()
