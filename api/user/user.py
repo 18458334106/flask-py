@@ -24,9 +24,8 @@ def user_login():
     else:
         session['user_info'] = user
         return r(msg='登录成功', data=user)
-
 @user_bp.route('/list', methods=['POST','get'])
-def userList():
+def user_list():
     userInfo = session.get('user_info')
     if not userInfo:
         return r(msg='暂未登录')
