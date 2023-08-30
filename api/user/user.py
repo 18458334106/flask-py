@@ -110,7 +110,7 @@ def user_list():
       401:
         description: 失败
     """
-    userInfo = session.get('user_info')
+    userInfo = get_jwt_identity()
     if not userInfo:
         return r(msg='暂未登录')
     else:
