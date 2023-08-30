@@ -119,4 +119,4 @@ def user_list():
         return r(msg='暂未登录')
     else:
         user = supabase.table('sys_user').select('*').execute().data
-        return user
+        return r(msg='',data=userInfo,code=200)
