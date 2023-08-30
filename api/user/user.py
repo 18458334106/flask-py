@@ -2,10 +2,6 @@ from utils.sql import supabase
 from flask import Blueprint,request, session
 from utils.entity import r
 user_bp = Blueprint('user', __name__, url_prefix='/user')
-# 设置 session 密钥
-"""----------------------------------------
-                API: 用户登录
--------------------------------------------"""
 @user_bp.route('/login', methods=['POST'])
 def user_login():
     reqJSONData = request.get_json(silent=True)
