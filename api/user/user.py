@@ -49,7 +49,7 @@ def user_login():
     if not all([username, password]):
         return r(code=401, msg='请输入正确的账号密码')
 
-    user = supabase.table('sys_user').select('username,password').eq('username',username).eq('password',password).execute().data
+    user = supabase.table('sys_user').select('id,username,name').eq('username',username).eq('password',password).execute().data
     # 4. 用户不存在, 直接返回
     if not user:
         return r(code=404, msg='账号或密码错误')
@@ -84,7 +84,10 @@ def user_info():
             description: 失败
         """
     userInfo = get_jwt_identity()
-    return r(msg='',data={"username":userInfo['username'],"name":userInfo['name'],"id":userInfo['id']})
+    if not userInfo:
+        return r(msg='暂未登录')
+    else:
+        return r(msg='',data=userInfo)
 
 @user_bp.route('/list', methods=['GET'])
 @jwt_required()
