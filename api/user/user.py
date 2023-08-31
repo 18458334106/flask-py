@@ -5,40 +5,44 @@ from flask_jwt_extended import create_access_token, jwt_required ,get_jwt_identi
 user_bp = Blueprint('user', __name__, url_prefix='/user')
 @user_bp.route('/login', methods=['POST'])
 def user_login():
-    """用户登陆
+    """用户登录
     ---
-    parameters:
-      - name: loginForm
-        in: body
-        type: object
-        required: true
-        description: 账号密码
-        schema:
-          properties:
-            username:
-              type: string
-            password:
-              type: string
-    requestBody:
-      description: body
-      required: true
-      content:
-        application/json:
+      tags:
+          -  user
+      consumes:
+          - multipart/form-data
+      parameters:
+        - name: loginForm
+          in: body
+          type: object
+          required: true
+          description: 账号密码
           schema:
-            example: {"token":TOKEN}
-    responses:
-      200:
-        description: 成功
-        schema:
-          properties:
-            code:
-              type: integer
-            msg:
-              type: string
-            data:
-              type: object
-      401:
-        description: 失败
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      requestBody:
+        description: body
+        required: true
+        content:
+          application/json:
+            schema:
+              example: {"token":TOKEN}
+      responses:
+        200:
+          description: 成功
+          schema:
+            properties:
+              code:
+                type: integer
+              msg:
+                type: string
+              data:
+                type: object
+        401:
+          description: 失败
     """
     reqJSONData = request.get_json(silent=True)
     print(reqJSONData)
@@ -63,6 +67,10 @@ def user_login():
 def user_info():
     """获取用户信息
         ---
+        tags:
+          -  user
+        consumes:
+          - multipart/form-data
         parameters:
           - name: Authorization
             in: header
@@ -94,6 +102,10 @@ def user_info():
 def user_list():
     """获取用户列表
     ---
+    tags:
+      -  user
+    consumes:
+      - multipart/form-data
     parameters:
       - name: Authorization
         in: header
