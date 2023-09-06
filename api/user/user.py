@@ -95,7 +95,7 @@ def user_info():
     if not userInfo:
         return r(msg='暂未登录')
     else:
-        return r(msg='',data=userInfo)
+        return r(msg='success',data=userInfo,code=200)
 
 @user_bp.route('/list', methods=['GET'])
 @jwt_required()
@@ -136,5 +136,8 @@ def user_list():
         return r(msg='暂未登录')
     else:
         username = request.args.get('username')
-        user = supabase.table('sys_user').select('*').eq("username",username).execute().data
-        return r(msg='',data=user,code=200)
+        if username:
+            user = supabase.table('sys_user').select('*').eq("username",username).execute().data
+        else:
+            user = supabase.table('sys_user').select('*').execute().data
+        return r(msg='success',data=user,code=200)
