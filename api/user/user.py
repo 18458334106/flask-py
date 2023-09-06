@@ -112,6 +112,11 @@ def user_list():
         required: true
         description: 用户token
         type: string
+      - name: username
+        in: path
+        required: false
+        description: 用户名
+        type: string
     responses:
       200:
         description: 成功
@@ -130,5 +135,6 @@ def user_list():
     if not userInfo:
         return r(msg='暂未登录')
     else:
-        user = supabase.table('sys_user').select('*').execute().data
+        username = request.args.get('username')
+        user = supabase.table('sys_user').select('*').eq("username",username).execute().data
         return r(msg='',data=user,code=200)
