@@ -10,7 +10,7 @@ def user_login():
       tags:
           -  user
       consumes:
-          - multipart/form-data
+          - application/json
       parameters:
         - name: loginForm
           in: body
