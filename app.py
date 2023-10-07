@@ -7,7 +7,7 @@ from flask_jwt_extended import JWTManager
 # 创建 Flask 实例
 app = Flask(__name__)
 app.register_blueprint(user_bp)
-app.config['SECRET_KEY'] = 'I LIKE U'
+app.config['SECRET_KEY'] = 'focusInYou'
 CORS(app, supports_credentials=True,resources=r'/*')
 app.config['JWT_SECRET_KEY'] = 'focusInYou' #jwt密钥 可自定义
 jwt = JWTManager(app) #实例化

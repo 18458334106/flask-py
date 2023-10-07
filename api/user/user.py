@@ -141,3 +141,61 @@ def user_list():
         else:
             user = supabase.table('sys_user').select('*').execute().data
         return r(msg='success',data=user,code=200)
+
+@user_bp.route('/register', methods=['POST'])
+def user_register():
+    """用户注册
+        ---
+          tags:
+              -  user
+          consumes:
+              - application/json
+          parameters:
+            - name: userForm
+              in: body
+              type: object
+              required: true
+              description: 用户注册
+              schema:
+                properties:
+                  username:
+                    type: string
+                  password:
+                    type: string
+          requestBody:
+            description: body
+            required: true
+            content:
+              application/json:
+                schema:
+                  example: {"msg":"注册成功", "code":200}
+          responses:
+            200:
+              description: 成功
+              schema:
+                properties:
+                  code:
+                    type: integer
+                  msg:
+                    type: string
+                  data:
+                    type: object
+            401:
+              description: 失败
+        """
+    reqJSONData = request.get_json(silent=True)
+    if not reqJSONData: return r(code=401, msg='请输入账号密码以继续注册')
+    username = reqJSONData.get('username')
+    password = reqJSONData.get('password')
+    if not all([username, password]):
+        return r(code=401, msg='缺少账号或密码')
+    user = supabase.table('sys_user').select('id,username,name').eq('username', username).execute().data
+    print(user)
+    if not user:
+        data = supabase.table('sys_user').insert({"name": username,"username":username,"password":password}).execute()
+        if data:
+            return r(msg='注册成功', code=200)
+        else:
+            return r(code=401, msg='注册失败，请重试')
+    else:
+        return r(msg='账号已存在，请重新注册',code=401)
