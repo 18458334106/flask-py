@@ -66,3 +66,39 @@ def addMessage():
         message = request.args.get('message')
         result = supabase.table('user_message').insert({"message":message,"username":userInfo["name"]}).execute()
         return r(code=200,msg='添加成功')
+
+@user_message_bp.route('/del_message', methods=['GET'])
+@jwt_required()
+def delMessage():
+    """删除用户留言
+        ---
+        tags:
+          - user_message
+        parameters:
+          - name: Authorization
+            in: header
+            required: true
+            description: 用户token
+            type: string
+          - name: id
+            in: path
+            required: true
+            description: 留言id
+            type: string
+        responses:
+          200:
+            description: 成功
+            schema:
+              properties:
+                code:
+                  type: integer
+                msg:
+                  type: string
+                data:
+                  type: object
+          401:
+            description: 失败
+    """
+    messageId = request.args.get('messageId')
+    result = supabase.table('user_message').delete().eq("id",messageId).execute()
+    return  r(code=200,msg='删除成功')
