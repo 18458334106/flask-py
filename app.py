@@ -2,11 +2,13 @@ from flask import Flask
 from flask_cors import CORS
 from utils.entity import r
 from api.user.user import user_bp
+from api.user_message.user_message import user_message_bp
 from utils.swagger import Swagger
 from flask_jwt_extended import JWTManager
 # 创建 Flask 实例
 app = Flask(__name__)
 app.register_blueprint(user_bp)
+app.register_blueprint(user_message_bp)
 app.config['SECRET_KEY'] = 'focusInYou'
 CORS(app, supports_credentials=True,resources=r'/*')
 app.config['JWT_SECRET_KEY'] = 'focusInYou' #jwt密钥 可自定义
