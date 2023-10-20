@@ -1,5 +1,5 @@
 from utils.sql import supabase
-from flask import Blueprint,request, session
+from flask import Blueprint,request
 from utils.entity import r
 from flask_jwt_extended import jwt_required,get_jwt_identity
 user_message_bp = Blueprint('user_message', __name__, url_prefix='/user_message')
@@ -59,12 +59,11 @@ def addMessage():
             description: 失败
     """
     userInfo = get_jwt_identity()
-    print(userInfo)
     if not userInfo:
         return r(msg='暂未登录')
     else:
         message = request.args.get('message')
-        result = supabase.table('user_message').insert({"message":message,"username":userInfo["name"]}).execute()
+        result = supabase.table('user_message').insert({"message":message,"username":userInfo.get('name')}).execute()
         return r(code=200,msg='添加成功')
 
 @user_message_bp.route('/del_message', methods=['GET'])

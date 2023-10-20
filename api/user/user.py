@@ -1,5 +1,5 @@
 from utils.sql import supabase
-from flask import Blueprint,request, session
+from flask import Blueprint,request
 from utils.entity import r
 from flask_jwt_extended import create_access_token, jwt_required ,get_jwt_identity
 user_bp = Blueprint('user', __name__, url_prefix='/user')
@@ -44,23 +44,18 @@ def user_login():
         401:
           description: 失败
     """
-    reqJSONData = request.get_json(silent=True)
-    print(reqJSONData)
-    if not reqJSONData: return r(code=401, msg='请输入正确的账号密码')
-    username = reqJSONData.get('username')
-    password = reqJSONData.get('password')
-
-    if not all([username, password]):
+    loginForm = request.get_json(silent=True)
+    if not all([loginForm.get('username'), loginForm.get('password')]):
         return r(code=401, msg='请输入正确的账号密码')
-
-    user = supabase.table('sys_user').select('id,username,name').eq('username',username).eq('password',password).execute().data
-    # 4. 用户不存在, 直接返回
+    user = (supabase.table('sys_user')
+            .select('id,username,name')
+            .eq('username',loginForm.get('username'))
+            .eq('password',loginForm.get('password'))
+            .execute()).data
     if not user:
-        return r(code=404, msg='账号或密码错误')
+        return r(code=401, msg='账号或密码错误')
     else:
-        access_token = create_access_token(identity=user[0])  # 创建token
-        session['user_info'] = user
-        return r(msg='登录成功', data={'token': access_token})
+        return r(code=200, data={'token':create_access_token(identity=user[0])},msg='登录成功')
 
 @user_bp.route('/info', methods=['GET'])
 @jwt_required()
@@ -135,11 +130,10 @@ def user_list():
     if not userInfo:
         return r(msg='暂未登录')
     else:
+        sql = supabase.table('sys_user').select('*')
         username = request.args.get('username')
-        if username:
-            user = supabase.table('sys_user').select('*').eq("username",username).execute().data
-        else:
-            user = supabase.table('sys_user').select('*').execute().data
+        if username: sql.eq('username',username)
+        user = sql.execute().data
         return r(msg='success',data=user,code=200)
 
 @user_bp.route('/register', methods=['POST'])
@@ -183,19 +177,20 @@ def user_register():
             401:
               description: 失败
         """
-    reqJSONData = request.get_json(silent=True)
-    if not reqJSONData: return r(code=401, msg='请输入账号密码以继续注册')
-    username = reqJSONData.get('username')
-    password = reqJSONData.get('password')
-    if not all([username, password]):
+    user_register = request.get_json(silent=True)
+    if not all([user_register.get('username'),user_register.get('password')]):
         return r(code=401, msg='缺少账号或密码')
-    user = supabase.table('sys_user').select('id,username,name').eq('username', username).execute().data
-    print(user)
-    if not user:
-        data = supabase.table('sys_user').insert({"name": username,"username":username,"password":password}).execute()
-        if data:
-            return r(msg='注册成功', code=200)
-        else:
-            return r(code=401, msg='注册失败，请重试')
     else:
-        return r(msg='账号已存在，请重新注册',code=401)
+        res = (supabase.from_('sys_user').select('*')
+                .eq('username', user_register.get('username'))
+                .execute()).data
+        if res:
+            return r(code=401, msg='账号已被注册')
+        else:
+            user_register['name'] = user_register.get('username')
+            sql = supabase.from_('sys_user').insert(user_register)
+            res = sql.execute().data
+            if res:
+                return r(code=200, msg='注册成功')
+            else:
+                return r(code=401, msg='注册失败')
