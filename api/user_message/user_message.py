@@ -63,7 +63,7 @@ def addMessage():
         return r(msg='暂未登录')
     else:
         message = request.args.get('message')
-        result = supabase.table('user_message').insert({"message":message,"username":userInfo.get('name')}).execute()
+        result = supabase.table('user_message').insert({"message":message,"username":userInfo.get('name'),"userId":userInfo.get('id')}).execute()
         return r(code=200,msg='添加成功')
 
 @user_message_bp.route('/del_message', methods=['GET'])
