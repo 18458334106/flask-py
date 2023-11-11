@@ -15,8 +15,9 @@ def connect():
 def disconnect():
     print('Client disconnected')
 
-@socketio.on('message',namespace='/chat')
+@socketio.on('message', namespace='/chat')
 def message(message):
+    emit('message update', message,broadcast=True,namespace='/chat')
     supabase.table('chat_recode').insert(message).execute()
 
 @socketBp.route('/recode',methods=['POST'])
