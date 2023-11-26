@@ -3,7 +3,7 @@ from utils.entity import r
 from flask_socketio import SocketIO, send, emit
 from utils.sql import supabase
 
-socketBp = Blueprint('socket', __name__ ,url_prefix='/chat')
+socket_bp = Blueprint('socket', __name__ ,url_prefix='/chat')
 
 socketio = SocketIO()
 
@@ -20,7 +20,7 @@ def message(message):
     emit('message update', message,broadcast=True,namespace='/chat')
     supabase.table('chat_recode').insert(message).execute()
 
-@socketBp.route('/recode',methods=['POST'])
+@socket_bp.route('/recode',methods=['POST'])
 def queryRecode():
     obj = request.get_json(silent=True)
     print(type(obj['userId']),obj['toUserId'])
