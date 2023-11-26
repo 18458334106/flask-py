@@ -23,5 +23,5 @@ def getList():
           401:
             description: 失败
     """
-    res = supabase.table('examples').select("*").execute()
-    return r(code=200,data=res.get('data',[]))
+    res = supabase.table('examples').select("*").execute().data
+    return r(code=200,data=res)
