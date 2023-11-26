@@ -90,7 +90,7 @@ def user_info():
     if not userInfo:
         return r(msg='暂未登录')
     else:
-        return r(msg='success',data=userInfo,code=200)
+        return r(msg='获取用户信息成功',data=userInfo,code=200)
 
 @user_bp.route('/list', methods=['GET'])
 @jwt_required()

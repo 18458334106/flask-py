@@ -24,7 +24,7 @@ def getMessageList():
             description: 失败
     """
     result = supabase.table('user_message').select('*').execute()
-    return r(code=200,msg='获取成功', data=result.data)
+    return r(code=200, data=result.data)
 
 @user_message_bp.route('/add_message', methods=['GET'])
 @jwt_required()

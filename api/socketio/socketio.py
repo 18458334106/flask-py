@@ -32,4 +32,4 @@ def queryRecode():
               .eq('toUserId',obj['toUserId']).execute().data)
     res = result1 + result2
     res.sort(key=lambda x:x['created_at'],reverse=False)
-    return r(code=200,msg='操作成功',data=res)
+    return r(code=200,data=res)
