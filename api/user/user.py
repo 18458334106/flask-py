@@ -2,7 +2,11 @@ from utils.sql import supabase
 from flask import Blueprint,request
 from utils.entity import r
 from flask_jwt_extended import create_access_token, jwt_required ,get_jwt_identity
+from flask_apscheduler import APScheduler
+
 user_bp = Blueprint('user', __name__, url_prefix='/user')
+scheduler = APScheduler()
+
 @user_bp.route('/login', methods=['POST'])
 def user_login():
     """用户登录
@@ -47,7 +51,7 @@ def user_login():
     loginForm = request.get_json(silent=True)
     if not all([loginForm.get('username'), loginForm.get('password')]):
         return r(code=401, msg='请输入正确的账号密码')
-    user = (supabase.table('sys_user')
+    user = (supabase.table('user')
             .select('id,username,name')
             .eq('username',loginForm.get('username'))
             .eq('password',loginForm.get('password'))
@@ -130,7 +134,7 @@ def user_list():
     if not userInfo:
         return r(msg='暂未登录')
     else:
-        sql = supabase.table('sys_user').select('*')
+        sql = supabase.table('user').select('*')
         username = request.args.get('username')
         if username: sql.eq('username',username)
         user = sql.execute().data
@@ -181,14 +185,14 @@ def user_register():
     if not all([user_register.get('username'),user_register.get('password')]):
         return r(code=401, msg='缺少账号或密码')
     else:
-        res = (supabase.from_('sys_user').select('*')
+        res = (supabase.from_('user').select('*')
                 .eq('username', user_register.get('username'))
                 .execute()).data
         if res:
             return r(code=401, msg='账号已被注册')
         else:
             user_register['name'] = user_register.get('username')
-            sql = supabase.from_('sys_user').insert(user_register)
+            sql = supabase.from_('user').insert(user_register)
             res = sql.execute().data
             if res:
                 return r(code=200, msg='注册成功')

@@ -3,7 +3,7 @@ from flask import Blueprint
 from utils.entity import r
 examples_bp = Blueprint('examples', __name__, url_prefix='/examples')
 
-@examples_bp.route('/getList')
+@examples_bp.route('/list')
 def getList():
     """获取examples列表
         ---

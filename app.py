@@ -2,11 +2,13 @@ from flask import Flask
 from flask_cors import CORS
 from utils.entity import r
 from api.user.user import user_bp
-from api.user_message.user_message import user_message_bp
+from api.message.message import user_message_bp
 from api.examples.examples import examples_bp
 from api.socketio.socketio import socketio,socket_bp
 from utils.swagger import Swagger
 from flask_jwt_extended import JWTManager
+from flask_apscheduler import APScheduler
+from utils.sql import supabase
 
 # 创建 Flask 实例
 app = Flask(__name__)
@@ -36,6 +38,27 @@ def invalid_token_callback(error):
 def unauthorized_callback(error):
     return r(code=401, msg='您还未登陆')
 
+class Config(object):  # 创建配置，用类
+    # 任务列表
+    JOBS = [
+        {  # 第二个任务，每隔5S执行一次
+            'id': 'job2',
+            'func': '__main__:sql_task',  # 方法名
+            'trigger': 'interval',  # interval表示循环任务
+            'days': 4
+        }
+    ]
+
+
+def sql_task():
+    res = supabase.table('user').select("*").execute().data
+    print(res)
+
+app.config.from_object(Config())
+
 if __name__ == '__main__':
     # app.run(debug=True)
+    scheduler = APScheduler()
+    scheduler.init_app(app)
+    scheduler.start()
     socketio.run(app,debug=True,host='0.0.0.0',port=5001,allow_unsafe_werkzeug=True)

@@ -2,13 +2,13 @@ from utils.sql import supabase
 from flask import Blueprint,request
 from utils.entity import r
 from flask_jwt_extended import jwt_required,get_jwt_identity
-user_message_bp = Blueprint('user_message', __name__, url_prefix='/user_message')
-@user_message_bp.route('/get_messageList', methods=['GET'])
-def getMessageList():
+user_message_bp = Blueprint('message', __name__, url_prefix='/message')
+@user_message_bp.route('/list', methods=['GET'])
+def getList():
     """获取用户留言列表
         ---
         tags:
-          - user_message
+          - message
         responses:
           200:
             description: 成功
@@ -23,16 +23,16 @@ def getMessageList():
           401:
             description: 失败
     """
-    result = supabase.table('user_message').select('*').execute()
+    result = supabase.table('message').select('*').execute()
     return r(code=200, data=result.data)
 
-@user_message_bp.route('/add_message', methods=['GET'])
+@user_message_bp.route('/add', methods=['GET'])
 @jwt_required()
 def addMessage():
     """添加用户留言
         ---
         tags:
-          - user_message
+          - message
         parameters:
           - name: Authorization
             in: header
@@ -63,16 +63,16 @@ def addMessage():
         return r(msg='暂未登录')
     else:
         message = request.args.get('message')
-        result = supabase.table('user_message').insert({"message":message,"username":userInfo.get('name'),"userId":userInfo.get('id')}).execute()
+        result = supabase.table('message').insert({"message":message,"username":userInfo.get('name'),"userId":userInfo.get('id')}).execute()
         return r(code=200,msg='添加成功')
 
-@user_message_bp.route('/del_message', methods=['GET'])
+@user_message_bp.route('/del', methods=['GET'])
 @jwt_required()
 def delMessage():
     """删除用户留言
         ---
         tags:
-          - user_message
+          - message
         parameters:
           - name: Authorization
             in: header
@@ -99,5 +99,5 @@ def delMessage():
             description: 失败
     """
     messageId = request.args.get('messageId')
-    result = supabase.table('user_message').delete().eq("id",messageId).execute()
+    result = supabase.table('message').delete().eq("id",messageId).execute()
     return  r(code=200,msg='删除成功')
