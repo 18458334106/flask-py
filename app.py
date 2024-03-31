@@ -45,7 +45,7 @@ class Config(object):  # 创建配置，用类
             'id': 'job2',
             'func': '__main__:sql_task',  # 方法名
             'trigger': 'interval',  # interval表示循环任务
-            'days': 4
+            'days': 1
         }
     ]
 
