@@ -1,10 +1,10 @@
 from flask import Flask
 from flask_cors import CORS
 from utils.entity import r
-from api.user.user import user_bp
-from api.message.message import user_message_bp
-from api.examples.examples import examples_bp
-from api.socketio.socketio import socketio,socket_bp
+from api.user import user_bp
+# from api.message.message import user_message_bp
+# from api.examples.examples import examples_bp
+from api.chat import socketio,chat_bp
 from utils.swagger import Swagger
 from flask_jwt_extended import JWTManager
 from flask_apscheduler import APScheduler
@@ -13,9 +13,9 @@ from utils.sql import supabase
 # 创建 Flask 实例
 app = Flask(__name__)
 app.register_blueprint(user_bp)
-app.register_blueprint(user_message_bp)
-app.register_blueprint(socket_bp)
-app.register_blueprint(examples_bp)
+# app.register_blueprint(user_message_bp)
+app.register_blueprint(chat_bp)
+# app.register_blueprint(examples_bp)
 
 CORS(app, supports_credentials=True,resources=r'/*')
 app.config['JWT_SECRET_KEY'] = 'focusInYou' #jwt密钥 可自定义
@@ -42,7 +42,7 @@ class Config(object):  # 创建配置，用类
     # 任务列表
     JOBS = [
         {  # 第二个任务，每隔5S执行一次
-            'id': 'job2',
+            'id': 'job1',
             'func': '__main__:sql_task',  # 方法名
             'trigger': 'interval',  # interval表示循环任务
             'days': 1
