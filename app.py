@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from utils.entity import r
-from api.user import user_bp
+from api.users import users_bp
 # from api.message.message import user_message_bp
 # from api.examples.examples import examples_bp
 from api.chat import socketio,chat_bp
@@ -12,7 +12,7 @@ from utils.sql import supabase
 
 # 创建 Flask 实例
 app = Flask(__name__)
-app.register_blueprint(user_bp)
+app.register_blueprint(users_bp)
 # app.register_blueprint(user_message_bp)
 app.register_blueprint(chat_bp)
 # app.register_blueprint(examples_bp)
