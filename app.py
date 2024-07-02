@@ -1,7 +1,9 @@
+import random
 from flask import Flask
 from flask_cors import CORS
 from utils.entity import r
 from api.users import users_bp
+import requests
 # from api.message.message import user_message_bp
 # from api.examples.examples import examples_bp
 from api.chat import socketio,chat_bp
@@ -45,14 +47,62 @@ class Config(object):  # 创建配置，用类
             'id': 'job1',
             'func': '__main__:sql_task',  # 方法名
             'trigger': 'interval',  # interval表示循环任务
-            'days': 1
+            # 'days': 1
+            'seconds': 5
         }
     ]
 
-
+phonesArr = [
+	'19928282288',
+	'15907570757',
+	'19927777772',
+	'13929131914',
+	'15918141319',
+	'13211191413',
+	'13433191319',
+	'19928282228',
+	'15918186668',
+	'19927777770',
+	'19927777727',
+	'18718718718',
+	'13433143931',
+	'19928282868',
+	'13929193149',
+	'15975755666',
+	'18823497888',
+	'13924541319',
+	'13929191431',
+	'15916191413',
+	'13433141941',
+	'13433191913',
+	'13433141419',
+	'13433144113',
+	'15918191413',
+	'13433139493',
+	'13534349431',
+	'19924131314',
+	'13392241319',
+	'18923149131',
+	'13927729331',
+	'13927729931',
+	'13211141931',
+	'13928254913',
+	'13823491913',
+	'13827772272',
+	'18824899998',
+	'13528991319',
+	'13528914131',
+	'18824899666'
+]
 def sql_task():
-    res = supabase.table('user').select("*").execute().data
-    print(res)
+    url = 'https://api.yesmax.com.cn/api/Send/phoneSend'
+    index = int(random.random() * 10)
+    print(index,phonesArr[index])
+    res = requests.post(url,{ 'phone': phonesArr[index] })
+    print(res.content)
+    return
+    # res = supabase.table('user').select("*").execute().data
+    # print(111)
 
 app.config.from_object(Config())
 
