@@ -95,15 +95,8 @@ phonesArr = [
 	'18824899666'
 ]
 def sql_task():
-    url = 'https://api.yesmax.com.cn/api/Send/phoneSend'
-    index = int(random.random() * 10)
-    print(index,phonesArr[index])
-    # res = requests.post(url,{ 'phone': phonesArr[index] })
-    res = requests.post(url,{ 'phone': '18458334106' })
-    print(res.content)
-    return
-    # res = supabase.table('user').select("*").execute().data
-    # print(111)
+    res = supabase.table('user').select("*").execute().data
+    print(111)
 
 app.config.from_object(Config())
 
