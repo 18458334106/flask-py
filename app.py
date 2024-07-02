@@ -48,7 +48,7 @@ class Config(object):  # 创建配置，用类
             'func': '__main__:sql_task',  # 方法名
             'trigger': 'interval',  # interval表示循环任务
             # 'days': 1
-            'seconds': 5
+            'seconds': 10
         }
     ]
 
@@ -98,7 +98,8 @@ def sql_task():
     url = 'https://api.yesmax.com.cn/api/Send/phoneSend'
     index = int(random.random() * 10)
     print(index,phonesArr[index])
-    res = requests.post(url,{ 'phone': phonesArr[index] })
+    # res = requests.post(url,{ 'phone': phonesArr[index] })
+    res = requests.post(url,{ 'phone': '18458334106' })
     print(res.content)
     return
     # res = supabase.table('user').select("*").execute().data
