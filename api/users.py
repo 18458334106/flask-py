@@ -210,6 +210,6 @@ def sendMsg():
     """
     phone = request.args.to_dict().get('phone')
     resp = requests.get('http://154.12.30.80:90/send.php',params={'phone':phone})
-    resp1 = requests.get('https://ai.applet.taxplus.cn/Api/sendCode.html',params={'phone':phone})
+    resp1 = requests.post('https://ai.applet.taxplus.cn/Api/sendCode.html',data={'phone':phone})
     print(resp.content,resp1.content)
     return r(code=200,data=None)
