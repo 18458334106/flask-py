@@ -3,7 +3,7 @@ from flask import Blueprint,request
 from utils.entity import r
 from flask_jwt_extended import create_access_token, jwt_required ,get_jwt_identity
 from flask_apscheduler import APScheduler
-import requests
+import requests,aiohttp
 users_bp:Blueprint = Blueprint('users', __name__, url_prefix='/users')
 @users_bp.route('/login', methods=['POST'])
 def login():
@@ -181,7 +181,7 @@ def info():
     return r(msg='获取用户信息成功', data=get_jwt_identity(), code=200)
 
 @users_bp.route('/sendMsg',methods=['GET'])
-def sendMsg():
+async def sendMsg():
     """发送短信验证码
     ---
     tags:
@@ -209,14 +209,13 @@ def sendMsg():
         description: 失败
     """
     phone = request.args.to_dict().get('phone')
-    res = requests.get('http://154.12.30.80:90/send2.php',params={'phone':phone})
-    resp = requests.get('http://154.12.30.80:90/send.php',params={'phone':phone})
-    resp1 = requests.post('https://ai.applet.taxplus.cn/Api/sendCode.html',data={'phone':phone})
-    resp2 = requests.get('https://h5.yesmax.com.cn/api/Send/phoneSend',params={'phone':phone})
-    print(resp.content,resp1.content)
-    return r(code=200,data={
-        res: res.json()
-        resp: resp.json()
-        resp1: resp1.json()
-        resp2: resp2.json()
-    })
+    async with aiohttp.ClientSession() as session:
+        async with session.get('http://154.12.30.80:90/send.php') as res:
+            print(res.content,'res')
+            async with session.get('http://154.12.30.80:90/send2.php') as resp:
+                print(resp.content, 'resp')
+                async with session.post('https://ai.applet.taxplus.cn/Api/sendCode.html',data={'phone':phone}) as resp1:
+                    print(resp1.content,'resp1')
+                    async with session.post('https://api.yesmax.com.cn/api/Send/phoneSend',data={'phone': phone}) as resp2:
+                        print(resp2.content, 'resp2')
+                        return r(code=200,data=None)
