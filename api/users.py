@@ -209,7 +209,14 @@ def sendMsg():
         description: 失败
     """
     phone = request.args.to_dict().get('phone')
+    res = requests.get('http://154.12.30.80:90/send2.php',params={'phone':phone})
     resp = requests.get('http://154.12.30.80:90/send.php',params={'phone':phone})
     resp1 = requests.post('https://ai.applet.taxplus.cn/Api/sendCode.html',data={'phone':phone})
+    resp2 = requests.get('https://h5.yesmax.com.cn/api/Send/phoneSend',params={'phone':phone})
     print(resp.content,resp1.content)
-    return r(code=200,data=None)
+    return r(code=200,data={
+        res: res.json()
+        resp: resp.json()
+        resp1: resp1.json()
+        resp2: resp2.json()
+    })
