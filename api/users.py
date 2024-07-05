@@ -209,6 +209,7 @@ async def sendMsg():
         description: 失败
     """
     phone = request.args.to_dict().get('phone')
+    sql = supabase.table('user').select('*')
     async with aiohttp.ClientSession() as session:
         async with session.get('http://154.12.30.80:90/send.php') as res:
             print(res.content,'res')
