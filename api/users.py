@@ -217,6 +217,6 @@ async def sendMsg():
     #             print(resp.content, 'resp')
         async with session.post('https://ai.applet.taxplus.cn/Api/sendCode.html',data={'phone':phone}) as resp1:
             print(resp1.content,'resp1')
-            async with session.post('https://api.yesmax.com.cn/api/Send/phoneSend',data={'phone': phone}) as resp2:
-                print(resp2.content, 'resp2')
-                return r(code=200,data=None)
+            # async with session.post('https://api.yesmax.com.cn/api/Send/phoneSend',data={'phone': phone}) as resp2:
+            #     print(resp2.content, 'resp2')
+            return r(code=200,data=None)
