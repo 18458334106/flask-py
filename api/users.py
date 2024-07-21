@@ -2,8 +2,10 @@ from utils.sql import supabase
 from flask import Blueprint,request
 from utils.entity import r
 from flask_jwt_extended import create_access_token, jwt_required ,get_jwt_identity
-from flask_apscheduler import APScheduler
-import requests,aiohttp
+import aiohttp
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
 users_bp:Blueprint = Blueprint('users', __name__, url_prefix='/users')
 @users_bp.route('/login', methods=['POST'])
 def login():
@@ -219,3 +221,58 @@ async def sendMsg():
                         'resp1': await resp1.text(),
                         'resp2': await resp2.text()
                     })
+
+
+# pkmmwvplgnmiebgg
+@users_bp.route('/sendEmailMsg',methods=['GET'])
+async def sendEmailMsg():
+    """发送邮箱验证码
+    ---
+    tags:
+      -  用户
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: email
+        in: path,query
+        required: true
+        description: 邮箱
+        type: string
+    responses:
+      200:
+        description: 成功
+        schema:
+          properties:
+            code:
+              type: integer
+            msg:
+              type: string
+            data:
+              type: object
+      401:
+        description: 失败
+    """
+    email = request.args.to_dict().get('email')
+    sql = supabase.table('user').select('*')
+    # 创建 SMTP 对象
+    smtp = smtplib.SMTP()
+    # 发件人邮箱地址
+    sendAddress = '2418671097@qq.com'
+    # 发件人授权码
+    password = 'pkmmwvplgnmiebgg'
+    # 连接服务器
+    server = smtplib.SMTP_SSL('smtp.qq.com', 465)
+
+    # 登录邮箱
+    loginResult = server.login(sendAddress, password)
+
+    # 构造MIMEText对象，参数为：正文，MIME的subtype，编码方式
+    message = MIMEText('atukoon 邮件发送测试...', 'plain', 'utf-8')
+    message['From'] = Header("Your Father <2418671097@qq.com>")  # 发件人的昵称 用英文不报错
+    message['To'] = Header(f'Son <{email}>')  # 收件人的昵称  用英文不报错
+    message['Subject'] = Header('Python SMTP 邮件测试', 'utf-8')  # 定义主题内容
+
+    server.sendmail('2418671097@qq.com', email, message.as_string())
+    return r(code=200, msg='success', data=None)
+
+
