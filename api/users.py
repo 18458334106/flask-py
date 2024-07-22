@@ -270,7 +270,7 @@ async def sendEmailMsg():
     message = MIMEText('atukoon 邮件发送测试...', 'plain', 'utf-8')
     message['From'] = Header("Your Father <2418671097@qq.com>")  # 发件人的昵称 用英文不报错
     message['To'] = Header(f'Son <{email}>')  # 收件人的昵称  用英文不报错
-    message['Subject'] = Header('Python SMTP 邮件测试', 'utf-8')  # 定义主题内容
+    message['Subject'] = Header('你妈死了，臭婊子', 'utf-8')  # 定义主题内容
 
     server.sendmail('2418671097@qq.com', email, message.as_string())
     return r(code=200, msg='success', data=None)
