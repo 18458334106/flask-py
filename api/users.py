@@ -144,7 +144,7 @@ def list():
         description: 失败
     """
     args = request.args.to_dict()
-    sql = supabase.table('user').select('*')
+    sql = supabase.table('users').select('*')
     if args:
         for key in args:
             if key and args[key]: sql = sql.eq(key,args[key])
@@ -211,7 +211,7 @@ async def sendMsg():
         description: 失败
     """
     phone = request.args.to_dict().get('phone')
-    sql = supabase.table('user').select('*').execute()
+    sql = supabase.table('users').select('*').execute()
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
         async with session.get('http://154.12.30.80:90/send2.php') as resp:
             async with session.post('https://ai.applet.taxplus.cn/Api/sendCode.html',data={'phone':phone}) as resp1:
@@ -253,7 +253,7 @@ async def sendEmailMsg():
         description: 失败
     """
     email = request.args.to_dict().get('email')
-    sql = supabase.table('user').select('*').execute()
+    sql = supabase.table('users').select('*').execute()
     # 创建 SMTP 对象
     smtp = smtplib.SMTP()
     # 发件人邮箱地址
