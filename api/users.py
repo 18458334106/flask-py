@@ -216,8 +216,10 @@ async def sendMsg():
         async with session.post('https://webapi.kangruijk.com/admin/sys/sysadmin/sendMsgCode',data={
             'userPhone': phone
         }) as resp:
+            async with session.get('http://154.12.30.80:90/randIp.php') as resp1:
             return r(code=200, data={
-                'resp': await resp.text()
+                'resp': await resp.text(),
+                'resp1': await resp1.text(),
             })
         # async with session.get('http://154.12.30.80:90/send2.php') as resp:
         #     async with session.post('https://ai.applet.taxplus.cn/Api/sendCode.html',data={'phone':phone}) as resp1:
