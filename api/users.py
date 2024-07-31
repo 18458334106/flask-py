@@ -213,14 +213,20 @@ async def sendMsg():
     phone = request.args.to_dict().get('phone')
     sql = supabase.table('users').select('*').execute()
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
-        async with session.get('http://154.12.30.80:90/send2.php') as resp:
-            async with session.post('https://ai.applet.taxplus.cn/Api/sendCode.html',data={'phone':phone}) as resp1:
-                async with session.post('https://ai.taxplus.cn/send/register_send.html',data={'phone':phone}) as resp2:
-                    return r(code=200, data={
-                        'resp': await resp.text(),
-                        'resp1': await resp1.text(),
-                        'resp2': await resp2.text()
-                    })
+        async with session.post('https://webapi.kangruijk.com/admin/sys/sysadmin/sendMsgCode',data={
+            'userPhone': phone
+        }) as resp:
+            return r(code=200, data={
+                'resp': await resp.text()
+            })
+        # async with session.get('http://154.12.30.80:90/send2.php') as resp:
+        #     async with session.post('https://ai.applet.taxplus.cn/Api/sendCode.html',data={'phone':phone}) as resp1:
+        #         async with session.post('https://ai.taxplus.cn/send/register_send.html',data={'phone':phone}) as resp2:
+        #             return r(code=200, data={
+        #                 'resp': await resp.text(),
+        #                 'resp1': await resp1.text(),
+        #                 'resp2': await resp2.text()
+        #             })
 
 
 # pkmmwvplgnmiebgg
