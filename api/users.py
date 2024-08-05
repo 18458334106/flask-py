@@ -6,11 +6,7 @@ import aiohttp,base64
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
-from io import BytesIO
-from PIL import Image
-from utils.utils import img_simi
-import ddddocr
-import cv2, numpy as np
+
 users_bp:Blueprint = Blueprint('users', __name__, url_prefix='/users')
 @users_bp.route('/login', methods=['POST'])
 def login():
@@ -65,7 +61,7 @@ def login():
 
 @users_bp.route('/register', methods=['POST'])
 def register():
-    """用户登录
+    """用户注册
         ---
           tags:
               -  用户
@@ -287,68 +283,5 @@ def sendEmailMsg():
 
     server.sendmail('2418671097@qq.com', email, message.as_string())
     return r(code=200, msg='success', data=None)
-
-
-@users_bp.route('/sendMsgAuto',methods=['GET'])
-async def sendMsgAuto():
-    """发送短信验证码
-    ---
-    tags:
-      -  用户
-    consumes:
-      - multipart/form-data
-    parameters:
-      - name: phone
-        in: path,query
-        required: true
-        description: 手机号
-        type: string
-    responses:
-      200:
-        description: 成功
-        schema:
-          properties:
-            code:
-              type: integer
-            msg:
-              type: string
-            data:
-              type: object
-      401:
-        description: 失败
-    """
-    email = request.args.to_dict().get('email')
-    sql = supabase.table('users').select('*').execute()
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
-        async with session.get('https://ai.interface.taxplus101.com/Verify/getParams') as resp:
-            result = await resp.json()
-            result = result['data']
-            # 去除base64数据的前缀
-            prefix, data = result['img'].split(',', 1)
-            # 解码base64数据
-            decoded_data = base64.b64decode(data)
-            # 使用BytesIO将字节数据转为文件对象
-            image_file = BytesIO(decoded_data)
-            # 使用PIL创建图片
-            image = Image.open(image_file)
-            bg = image.crop([0,0,340,190])
-            bg.save('bg.png')
-            target = image.crop([4,196,56,246])
-            target.save('target.png')
-            bg_origin = img_simi('bg.png',['layer01.jpg','layer02.jpg','layer03.jpg'])
-            det = ddddocr.DdddOcr(det=False,ocr=True,show_ad=False)
-            with open('target.png','rb') as f:
-                target_bytes = f.read()
-            with open(bg_origin,'rb') as f:
-                background_bytes = f.read()
-            res = det.slide_match(target_bytes,background_bytes,simple_target=True)
-            value = res['target'][0]
-            async with session.post('https://ai.interface.taxplus101.com/Send/code_login_send',data={
-                'value': value,
-                'key': result['key'],
-                'email': email
-            }) as resp1:
-                data = await resp1.text()
-                return r(code=200, msg='success', data=data)
 
 
