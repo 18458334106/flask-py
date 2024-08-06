@@ -11,7 +11,7 @@ from utils.swagger import Swagger
 from flask_jwt_extended import JWTManager
 from flask_apscheduler import APScheduler
 from utils.sql import supabase
-
+from utils.dl import dl
 # 创建 Flask 实例
 app = Flask(__name__)
 app.register_blueprint(users_bp)
@@ -59,6 +59,7 @@ app.config.from_object(Config())
 
 if __name__ == '__main__':
     # app.run(debug=True)
+    dl.run()
     scheduler = APScheduler()
     scheduler.init_app(app)
     scheduler.start()
