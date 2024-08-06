@@ -8,5 +8,3 @@ Flask-APScheduler==1.13.1
 requests==2.32.2
 aiohttp==3.9.5
 asgiref==3.8.1
-pillow==10.4.0
-imagehash==4.3.1
