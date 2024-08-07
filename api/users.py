@@ -214,13 +214,23 @@ async def sendMsg():
     phone = request.args.to_dict().get('phone')
     sql = supabase.table('users').select('*').execute()
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
-        async with session.post('https://ai.taxplus.cn/send/new_phone_send.html',data={
-            'phone': phone
-        }) as resp:
-            return r(code=200, data={
-                'resp': await resp.text()
-            })
-                
+        async with session.get('https://ai.app.taxplus.cn/api/getParams') as resp:
+            result = await resp.json()
+            key = result['data']['key']
+            img = result['data']['img']
+            async with session.post('http://slider-capture-crop.focusinyou.cn',data={
+                    "img": img
+                }) as resp1:
+                value = await resp1.json()
+                value = int(value['result']) - 25
+                async with session.post('https://ai.app.taxplus.cn/Api/sendCode.html',data={
+                    "key":key,
+                    "value":value,
+                    "phone":phone
+                }) as resp2:
+                    res = await resp2.json()
+                    code1 = res['data']['code']
+                    return r(code=200,data=code1)
 
 @users_bp.route('/sendEmailMsg',methods=['GET'])
 def sendEmailMsg():
