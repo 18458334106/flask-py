@@ -182,38 +182,8 @@ def info():
         description: 失败
     """
     return r(msg='获取用户信息成功', data=get_jwt_identity(), code=200)
+
 @users_bp.route('/sendMsg',methods=['GET'])
-async def sendMsg():
-    """发送短信验证码
-    ---
-    tags:
-      -  用户
-    consumes:
-      - multipart/form-data
-    parameters:
-      - name: phone
-        in: path,query
-        required: true
-        description: 手机号
-        type: string
-    responses:
-      200:
-        description: 成功
-        schema:
-          properties:
-            code:
-              type: integer
-            msg:
-              type: string
-            data:
-              type: object
-      401:
-        description: 失败
-    """
-    phone = request.args.to_dict().get('phone')
-    sql = supabase.table('users').select('*').execute()
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
-        async with session.post('@users_bp.route('/sendMsg',methods=['GET'])
 async def sendMsg():
     """发送短信验证码
     ---
