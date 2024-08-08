@@ -6,6 +6,7 @@ import aiohttp,base64
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
+import requests
 
 users_bp:Blueprint = Blueprint('users', __name__, url_prefix='/users')
 @users_bp.route('/login', methods=['POST'])
@@ -283,3 +284,8 @@ def sendEmailMsg():
 
     server.sendmail('2418671097@qq.com', email, message.as_string())
     return r(code=200, msg='success', data=None)
+
+@users_bp.route('/aaaa',methods=['GET'])
+async def aaaa():
+    res = requests.post('http://slider-capture-crop.focusinyou.cn')
+    return r(code=200,data=res.json())
