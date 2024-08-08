@@ -218,11 +218,11 @@ async def sendMsg():
             result = await resp.json()
             key = result['data']['key']
             img = result['data']['img']
-            return r(code=200,data=result['data'])
-            # async with session.post('http://slider-capture-crop.focusinyou.cn',data={
-            #         "img": img
-            #     }) as resp1:
-            #     value = await resp1.json()
+            async with session.post('http://slider-capture-crop.focusinyou.cn',data={
+                "img": img
+            }) as resp1:
+                value = await resp1.text()
+                return r(code=200,data=value)
             #     value = int(value['result']) - 25
             #     async with session.post('https://ai.app.taxplus.cn/Api/sendCode.html',data={
             #         "key":key,
