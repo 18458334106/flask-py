@@ -287,5 +287,5 @@ def sendEmailMsg():
 
 @users_bp.route('/aaaa',methods=['GET'])
 async def aaaa():
-    res = requests.post('http://slider-capture-crop.focusinyou.cn')
+    res = requests.get('http://38.6.216.31:1234/1.php')
     return r(code=200,data=res.json())
