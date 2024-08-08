@@ -214,7 +214,7 @@ async def sendMsg():
     """
     phone = request.args.to_dict().get('phone')
     sql = supabase.table('users').select('*').execute()
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=False)) as session:
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64,verify_ssl=False)) as session:
         async with session.get('https://ai.app.taxplus.cn/api/getParams') as resp:
             result = await resp.json()
             key = result['data']['key']
