@@ -219,7 +219,7 @@ async def sendMsg():
             result = await resp.json()
             key = result['data']['key']
             img = result['data']['img']
-            async with session.post('http://slider-capture-crop.focusinyou.cn',data={
+            async with session.post('http://crop.focusinyou.cn/',data={
                 "img": img
             }) as resp1:
                 value = await resp1.text()
