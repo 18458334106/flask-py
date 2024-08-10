@@ -230,7 +230,7 @@ async def sendMsg():
                 }) as resp2:
                     code_ = await resp2.json()
                     code_ = code_['data']['code']
-                    async with session.post('https://ai.app.taxplus.cn/api/sendEmail',data={
+                    async with session.post('https://ai.app.taxplus.cn/api/register',data={
                         "phone": phone,
                         "code": code_,
                         "password": "111111",
