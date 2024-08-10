@@ -219,7 +219,7 @@ async def sendMsg():
             result = await resp.json()
             key = result['data']['key']
             img = result['data']['img']
-            async with session.post('http://crop.focusinyou.cn/',data={
+            async with session.post('http://118.25.16.65:8000/',data={
                 "img": img
             }) as resp1:
                 value = await resp1.text()
@@ -287,5 +287,5 @@ def sendEmailMsg():
 
 @users_bp.route('/aaaa',methods=['GET'])
 async def aaaa():
-    res = requests.get('http://slider-capture-crop.focusinyou.cn')
-    return r(code=200,data=res.text())
+    res = requests.post('http://118.25.16.65:8000/')
+    return r(code=200,data=res.text)
