@@ -228,7 +228,7 @@ async def sendMsg():
                     "value": json.loads(value)['result'],
                     "email": phone
                 }) as resp2:
-                    code_ = await resp2.text()
+                    code_ = await resp2.json()
                     code_ = code_['data']['code']
                     return r(code=200,data=code_)
             #     value = int(value['result']) - 25
