@@ -223,7 +223,14 @@ async def sendMsg():
                 "img": img
             }) as resp1:
                 value = await resp1.text()
-                return r(code=200,data=json.loads(value)['result'])
+                async with session.post('https://ai.app.taxplus.cn/api/sendEmail',data={
+                    "key": key,
+                    "value": json.loads(value)['result'],
+                    "email": phone
+                }) as resp2:
+                    code_ = await resp2.text()
+                    code_ = code_['data']['code']
+                    return r(code=200,data=code_)
             #     value = int(value['result']) - 25
             #     async with session.post('https://ai.app.taxplus.cn/Api/sendCode.html',data={
             #         "key":key,
