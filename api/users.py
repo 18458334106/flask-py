@@ -233,8 +233,8 @@ async def sendMsg():
                     async with session.post('https://ai.app.taxplus.cn/api/register',data={
                         "phone": phone,
                         "code": code_,
-                        "password": "111111",
-                        "re_password": "111111",
+                        "password": "base64,iVBORw0K",
+                        "re_password": "base64,iVBORw0K",
                         "uniPlatform": "mp-weixin"
                     }) as resp3:
                         result_ = await resp3.json()
