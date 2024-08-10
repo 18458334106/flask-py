@@ -230,16 +230,15 @@ async def sendMsg():
                 }) as resp2:
                     code_ = await resp2.json()
                     code_ = code_['data']['code']
-                    return r(code=200,data=code_)
-            #     value = int(value['result']) - 25
-            #     async with session.post('https://ai.app.taxplus.cn/Api/sendCode.html',data={
-            #         "key":key,
-            #         "value":value,
-            #         "phone":phone
-            #     }) as resp2:
-            #         res = await resp2.json()
-            #         code1 = res['data']['code']
-                    # return r(code=200,data=code1)
+                    async with session.post('https://ai.app.taxplus.cn/api/sendEmail',data={
+                        "phone": phone,
+                        "code": code_,
+                        "password": "111111",
+                        "re_password": "111111",
+                        "uniPlatform": "mp-weixin"
+                    }) as resp3:
+                        result_ = await resp3.json()
+                        return r(code=200,data=result_)
 
 @users_bp.route('/sendEmailMsg',methods=['GET'])
 def sendEmailMsg():
