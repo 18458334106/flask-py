@@ -2,7 +2,7 @@ from utils.sql import supabase
 from flask import Blueprint,request
 from utils.entity import r
 from flask_jwt_extended import create_access_token, jwt_required ,get_jwt_identity
-import aiohttp,base64
+import aiohttp,base64,json
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
@@ -222,7 +222,8 @@ async def sendMsg():
             async with session.post('http://118.25.16.65:8000/',json={
                 "img": img
             }) as resp1:
-                value = await resp1.json()
+                value = await resp1.text()
+                value = json.loads(value)
                 return r(code=200,data=value)
             #     value = int(value['result']) - 25
             #     async with session.post('https://ai.app.taxplus.cn/Api/sendCode.html',data={
