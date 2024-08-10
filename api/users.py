@@ -222,7 +222,7 @@ async def sendMsg():
             async with session.post('http://118.25.16.65:8000/',json={
                 "img": img
             }) as resp1:
-                value = await resp1.text()
+                value = await resp1.json()
                 return r(code=200,data=value)
             #     value = int(value['result']) - 25
             #     async with session.post('https://ai.app.taxplus.cn/Api/sendCode.html',data={
