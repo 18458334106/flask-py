@@ -219,7 +219,7 @@ async def sendMsg():
             result = await resp.json()
             key = result['data']['key']
             img = result['data']['img']
-            async with session.post('http://118.25.16.65:8000/',data={
+            async with session.post('http://118.25.16.65:8000/',json={
                 "img": img
             }) as resp1:
                 value = await resp1.text()
