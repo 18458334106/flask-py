@@ -2,11 +2,11 @@ from utils.sql import supabase
 from flask import Blueprint,request
 from utils.entity import r
 from flask_jwt_extended import create_access_token, jwt_required ,get_jwt_identity
-import aiohttp,base64,json
+import aiohttp,json
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
-import requests
+
 
 users_bp:Blueprint = Blueprint('users', __name__, url_prefix='/users')
 @users_bp.route('/login', methods=['POST'])
@@ -291,7 +291,82 @@ def sendEmailMsg():
     server.sendmail('2418671097@qq.com', email, message.as_string())
     return r(code=200, msg='success', data=None)
 
-@users_bp.route('/aaaa',methods=['GET'])
-async def aaaa():
-    res = requests.post('http://118.25.16.65:8000/')
-    return r(code=200,data=res.text)
+@users_bp.route('/autoInfo',methods=['GET'])
+async def autoInfo():
+    """发送邮箱验证码
+    ---
+    tags:
+      -  用户
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: email
+        in: path,query
+        required: true
+        description: 邮箱
+        type: string
+      - name: phone
+        in: path,query
+        required: true
+        description: 手机号
+        type: string
+      - name: time
+        in: path,query
+        required: true
+        description: 时间戳
+        type: string
+    responses:
+      200:
+        description: 成功
+        schema:
+          properties:
+            code:
+              type: integer
+            msg:
+              type: string
+            data:
+              type: object
+      401:
+        description: 失败
+    """
+
+    email = request.args.to_dict().get('email')
+    phone = request.args.to_dict().get('phone')
+    time = request.args.to_dict().get('time')
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
+        async with session.post('https://ai.app.taxplus.cn/api/doLogin', data={
+            'name': email,
+            # 'password': 'base64,iVBORw0K'
+            'password': '123456Ii'
+        }) as resp:
+            result = await resp.json()
+            if result['code'] == '0000' :
+                async with session.post('https://ai.app.taxplus.cn/company/company_add', data={
+                    "business_license": "",
+                    "accounting_time": time,
+                    "company_name": phone,
+                    "credit_code": "9103749817921371",
+                    "tax_nature": 1,
+                    "industry_type1": 1,
+                    "industry_type2": 9,
+                    "register_type1": 3,
+                    "register_type2": 4,
+                    "legal_person": "",
+                    "register_capital": "",
+                    "register_date": "",
+                    "register_organ": "",
+                    "register_address": "",
+                    "postal_code": "",
+                    "company_phone": "",
+                    "company_email": "",
+                    "business_scope": "",
+                    "contacts_name": "嘿嘿嘿",
+                    "contacts_phone": phone,
+                    "contacts_email": email,
+                    "contacts_address": "11",
+                    # "customer_id":
+                },headers={ 'Authorization': f"Bearer {result['token']}" }) as resp1:
+                    result1 = await resp1.json()
+                    return r(code=200, data=result1)
+            else:
+                return r(code=200,data=result)
