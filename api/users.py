@@ -336,8 +336,7 @@ async def autoInfo():
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
         async with session.post('https://ai.app.taxplus.cn/api/doLogin', data={
             'name': email,
-            # 'password': 'base64,iVBORw0K'
-            'password': '123456Ii'
+            'password': 'base64,iVBORw0K'
         }) as resp:
             result = await resp.json()
             if result['code'] == '0000' :
@@ -345,7 +344,7 @@ async def autoInfo():
                     "business_license": "",
                     "accounting_time": time,
                     "company_name": phone,
-                    "credit_code": "9103749817921371",
+                    "credit_code": phone,
                     "tax_nature": 1,
                     "industry_type1": 1,
                     "industry_type2": 9,
