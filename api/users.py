@@ -369,3 +369,50 @@ async def autoInfo():
                     return r(code=200, data=result1)
             else:
                 return r(code=200,data=result)
+
+@users_bp.route('/sendMsg2',methods=['GET'])
+async def sendMsg2():
+    """发送短信验证码
+    ---
+    tags:
+      -  用户
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: phone
+        in: path,query
+        required: true
+        description: 手机号
+        type: string
+    responses:
+      200:
+        description: 成功
+        schema:
+          properties:
+            code:
+              type: integer
+            msg:
+              type: string
+            data:
+              type: object
+      401:
+        description: 失败
+    """
+    phone = request.args.to_dict().get('phone')
+    sql = supabase.table('users').select('*').execute()
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64,verify_ssl=False)) as session:
+        async with session.get('https://ai.app.taxplus.cn/api/getParams') as resp:
+            result = await resp.json()
+            key = result['data']['key']
+            img = result['data']['img']
+            async with session.post('http://118.25.16.65:8000/',json={
+                "img": img
+            }) as resp1:
+                value = await resp1.text()
+                async with session.post('https://ai.taxplus.cn/my/sendaccountcode.html',data={
+                    "key": key,
+                    "value": json.loads(value)['result'],
+                    "name": phone
+                }) as resp2:
+                    result_ = await resp2.json()
+                    return r(code=200,data=result_)
