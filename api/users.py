@@ -413,6 +413,8 @@ async def sendMsg2():
                     "key": key,
                     "value": json.loads(value)['result'],
                     "name": phone
+                },headers={
+                    'cookie':'password=oDrWsD68bQEMVifxVEKtJw%3D%3D; checkpwd=1; PHPSESSID=j95j7pa77465okb07e9gkdfh2j; think_var=zh-cn; name=sdkflja_ggg%40outlook.com'
                 }) as resp2:
                     result_ = await resp2.json()
                     return r(code=200,data=result_)
