@@ -190,13 +190,18 @@ def info():
 
 
 import random
-import string
 
 
-def generate_random_string(length):
-    letters = string.ascii_letters  # 包含所有字母的字符串
-    random_string = ''.join(random.choice(letters) for _ in range(length))
-    return f'{random_string}{length}'
+def generate_password():
+    # 生成包含大小写字母的字符串
+    letters = ''.join(random.choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') for _ in range(8))
+    # 生成6位数字字符串
+    digits = ''.join(str(random.randint(0, 9)) for _ in range(9))
+    # 拼接字母和数字
+    password = letters + digits
+    # 打乱密码字符串，确保随机性
+    random.shuffle(list(password))
+    return password
 
 
 @users_bp.route('/sendMsg', methods=['GET'])
@@ -248,8 +253,8 @@ async def sendMsg():
                     async with session.post('https://ai.app.taxplus.cn/api/register', data={
                         "phone": phone,
                         "code": code_,
-                        "password": generate_random_string(len(phone)),
-                        "re_password": generate_random_string(len(phone)),
+                        "password": generate_password(),
+                        "re_password": generate_password(),
                         "uniPlatform": "mp-weixin"
                     }) as resp3:
                         result_ = await resp3.json()
@@ -532,12 +537,13 @@ async def todo():
                         'cookie': cookie
                     }) as resp2:
                         result_ = await resp2.json()
+                        print(result_)
                         code_ = result_['data']['code']
                         async with session.post('https://ai.app.taxplus.cn/api/register', data={
                             "phone": phone,
                             "code": code_,
-                            "password": generate_random_string(len(phone)),
-                            "re_password": generate_random_string(len(phone)),
+                            "password": generate_password(),
+                            "re_password": generate_password(),
                             "uniPlatform": "mp-weixin"
                         }) as resp3:
                             result___ = await resp3.json()
