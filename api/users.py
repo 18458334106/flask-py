@@ -184,6 +184,16 @@ def info():
     """
     return r(msg='获取用户信息成功', data=get_jwt_identity(), code=200)
 
+
+import random
+import string
+ 
+def generate_random_string(length):
+    letters = string.ascii_letters  # 包含所有字母的字符串
+    random_string = ''.join(random.choice(letters) for _ in range(length))
+    return random_string
+
+
 @users_bp.route('/sendMsg',methods=['GET'])
 async def sendMsg():
     """发送短信验证码
@@ -223,7 +233,7 @@ async def sendMsg():
                 "img": img
             }) as resp1:
                 value = await resp1.text()
-                async with session.post('https://ai.app.taxplus.cn/api/sendEmail',data={
+                async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html',data={
                     "key": key,
                     "value": json.loads(value)['result'],
                     "email": phone
@@ -233,8 +243,8 @@ async def sendMsg():
                     async with session.post('https://ai.app.taxplus.cn/api/register',data={
                         "phone": phone,
                         "code": code_,
-                        "password": "base64,iVBORw0K",
-                        "re_password": "base64,iVBORw0K",
+                        "password": generate_random_string(len(phone)),
+                        "re_password": generate_random_string(len(phone)),
                         "uniPlatform": "mp-weixin"
                     }) as resp3:
                         result_ = await resp3.json()
