@@ -427,7 +427,8 @@ async def sendMsg2():
                     "img": img
                 }) as resp1:
                     value = await resp1.text()
-                    async with session.post('https://ai.taxplus.cn/my/sendaccountcode.html',data={
+                    # async with session.post('https://ai.taxplus.cn/my/sendaccountcode.html',data={
+                    async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html',data={
                         "key": key,
                         "value": json.loads(value)['result'],
                         "name": phone
