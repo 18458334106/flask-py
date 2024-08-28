@@ -544,6 +544,12 @@ async def todo():
                             "code": code_,
                             "password": generate_password(),
                             "re_password": generate_password()
-                        }) as resp3:
+                        },headers={
+                        'Accept': 'application/json, text/javascript, */*; q=0.01',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'referer': 'https://ai.taxplus.cn/login/login.html',
+                        'origin': 'https://ai.taxplus.cn/login/login.html',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
+                    }) as resp3:
                             result___ = await resp3.json()
                             return r(code=200, data=result___)
