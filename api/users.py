@@ -519,13 +519,13 @@ async def todo():
                 'referer': 'https://ai.taxplus.cn/login/login.html',
                 'origin': 'https://ai.taxplus.cn/login/login.html',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
-            },proxy=proxyUrl) as resp:
+            }) as resp:
                 result = await resp.json()
                 key = result['data']['key']
                 img = result['data']['img']
                 async with session.post('http://118.25.16.65:8000/', json={
                     "img": img
-                },proxy=proxyUrl) as resp1:
+                }) as resp1:
                     value = await resp1.text()
                     async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html', data={
                         "key": key,
@@ -538,7 +538,7 @@ async def todo():
                         'origin': 'https://ai.taxplus.cn/login/login.html',
                         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
                         'cookie': cookie
-                    },proxy=proxyUrl) as resp2:
+                    }) as resp2:
                         result_ = await resp2.json()
                         print(result_)
                         code_ = result_['data']['code']
