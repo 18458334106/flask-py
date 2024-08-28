@@ -499,70 +499,63 @@ async def todo():
     phone = request.args.to_dict().get('phone')
     conn = aiohttp.TCPConnector(ssl=False)
     async with aiohttp.ClientSession(connector=conn) as session:
-        async with session.get('https://share.proxy.qg.net/get?key=A08859FA') as resppp:
-            server = await resppp.json()
-            proxyAddr = server['data'][0]['server']
-            authKey = "A08859FA"
-            password = "87E7DFA09613"
-            proxyUrl = "http://%(user)s:%(password)s@%(server)s" % {
-                "user": authKey,
-                "password": password,
-                "server": proxyAddr,
-            }
-            async with session.post('https://ai.taxplus.cn/login/dologin.html', headers={
+        async with session.post('https://ai.taxplus.cn/login/dologin.html', headers={
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'X-Requested-With': 'XMLHttpRequest',
+            'referer': 'https://ai.taxplus.cn/login/login.html',
+            'origin': 'https://ai.taxplus.cn/login/login.html',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
+        }, data={
+            'name': 'sdkflja_ggg@outlook.com',
+            'password': '123456Ii',
+            'checkpwd': 1
+        }) as respp:
+            cookies = respp.headers.getall('Set-Cookie')
+            cookie = ';'.join(cookies).replace('/', '')
+            cookie = 'PHPSESSID=' + re.compile(r'PHPSESSID=(.*?);').findall(cookie)[0] + ';'
+            async with session.get('https://ai.app.taxplus.cn/api/getParams', headers={
                 'Accept': 'application/json, text/javascript, */*; q=0.01',
                 'X-Requested-With': 'XMLHttpRequest',
                 'referer': 'https://ai.taxplus.cn/login/login.html',
                 'origin': 'https://ai.taxplus.cn/login/login.html',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
-            }, data={
-                'name': 'sdkflja_ggg@outlook.com',
-                'password': '123456Ii',
-                'checkpwd': 1
-            },proxy=proxyUrl) as respp:
-                cookie = respp.headers.get('Set-Cookie')
-                async with session.get('https://ai.app.taxplus.cn/api/getParams', headers={
-                    'Accept': 'application/json, text/javascript, */*; q=0.01',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'referer': 'https://ai.taxplus.cn/login/login.html',
-                    'origin': 'https://ai.taxplus.cn/login/login.html',
-                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
-                },proxy=proxyUrl) as resp:
-                    result = await resp.json()
-                    key = result['data']['key']
-                    img = result['data']['img']
-                    async with session.post('http://118.25.16.65:8000/', json={
-                        "img": img
-                    },proxy=proxyUrl) as resp1:
-                        value = await resp1.text()
-                        async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html', data={
-                            "key": key,
-                            "value": json.loads(value)['result'],
-                            "email": phone
-                        }, headers={
+            },proxy=proxyUrl) as resp:
+                result = await resp.json()
+                key = result['data']['key']
+                img = result['data']['img']
+                async with session.post('http://118.25.16.65:8000/', json={
+                    "img": img
+                },proxy=proxyUrl) as resp1:
+                    value = await resp1.text()
+                    async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html', data={
+                        "key": key,
+                        "value": json.loads(value)['result'],
+                        "email": phone
+                    }, headers={
+                        'Accept': 'application/json, text/javascript, */*; q=0.01',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'referer': 'https://ai.taxplus.cn/login/login.html',
+                        'origin': 'https://ai.taxplus.cn/login/login.html',
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                        'cookie': cookie
+                    },proxy=proxyUrl) as resp2:
+                        result_ = await resp2.json()
+                        print(result_)
+                        code_ = result_['data']['code']
+                        paa = generate_password()
+                        async with session.post('https://ai.taxplus.cn/login/register.html', data={
+                            "phone": phone,
+                            "code": code_,
+                            "password": paa,
+                            "re_password": paa,
+                            "checkbox": 1
+                        },headers={
                             'Accept': 'application/json, text/javascript, */*; q=0.01',
                             'X-Requested-With': 'XMLHttpRequest',
                             'referer': 'https://ai.taxplus.cn/login/login.html',
                             'origin': 'https://ai.taxplus.cn/login/login.html',
                             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
                             'cookie': cookie
-                        },proxy=proxyUrl) as resp2:
-                            result_ = await resp2.json()
-                            print(result_)
-                            code_ = result_['data']['code']
-                            paa = generate_password()
-                            async with session.post('https://ai.taxplus.cn/login/register.html', data={
-                                "phone": phone,
-                                "code": code_,
-                                "password": paa,
-                                "re_password": paa
-                            },headers={
-                                'Accept': 'application/json, text/javascript, */*; q=0.01',
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'referer': 'https://ai.taxplus.cn/login/login.html',
-                                'origin': 'https://ai.taxplus.cn/login/login.html',
-                                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-                                'cookie': cookie
-                            },proxy=proxyUrl) as resp3:
-                                    result___ = await resp3.json()
-                                    return r(code=200, data=result___)
+                        }) as resp3:
+                                result___ = await resp3.json()
+                                return r(code=200, data=result___)
