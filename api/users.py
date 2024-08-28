@@ -441,7 +441,7 @@ async def sendMsg2():
                     async with session.post('https://ai.taxplus.cn/my/sendaccountemail.html',data={
                         "key": key,
                         "value": json.loads(value)['result'],
-                        "name": phone
+                        "email": phone
                     },headers={
                         'Accept': 'application/json, text/javascript, */*; q=0.01',
                         'X-Requested-With': 'XMLHttpRequest',
