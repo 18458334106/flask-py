@@ -200,7 +200,6 @@ def generate_password():
     # 拼接字母和数字
     password = letters + digits
     # 打乱密码字符串，确保随机性
-    random.shuffle(list(password))
     return password
 
 
@@ -494,8 +493,9 @@ def uploadtodo():
     }, verify=False)
     return r(code=200, data=res.text)
 
-@users_bp.route("/todo", methods=["get"])
+@users_bp.route("/todo", methods=["GET"])
 async def todo():
+    import re
     phone = request.args.to_dict().get('phone')
     conn = aiohttp.TCPConnector(ssl=False)
     async with aiohttp.ClientSession(connector=conn) as session:
