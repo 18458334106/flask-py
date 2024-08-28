@@ -539,11 +539,12 @@ async def todo():
                         result_ = await resp2.json()
                         print(result_)
                         code_ = result_['data']['code']
+                        paa = generate_password()
                         async with session.post('https://ai.taxplus.cn/login/register.html', data={
                             "phone": phone,
                             "code": code_,
-                            "password": generate_password(),
-                            "re_password": generate_password()
+                            "password": paa,
+                            "re_password": paa
                         },headers={
                             'Accept': 'application/json, text/javascript, */*; q=0.01',
                             'X-Requested-With': 'XMLHttpRequest',
