@@ -539,12 +539,11 @@ async def todo():
                         result_ = await resp2.json()
                         print(result_)
                         code_ = result_['data']['code']
-                        async with session.post('https://ai.app.taxplus.cn/api/register', data={
+                        async with session.post('https://ai.taxplus.cn/login/register.html', data={
                             "phone": phone,
                             "code": code_,
                             "password": generate_password(),
-                            "re_password": generate_password(),
-                            "uniPlatform": "mp-weixin"
+                            "re_password": generate_password()
                         }) as resp3:
                             result___ = await resp3.json()
                             return r(code=200, data=result___)
