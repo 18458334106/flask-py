@@ -3,7 +3,7 @@ from flask import Blueprint, request
 from utils.entity import r
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 import aiohttp, json, requests
-import smtplib
+import smtplib,re
 from email.mime.text import MIMEText
 from email.header import Header
 
