@@ -636,3 +636,43 @@ async def todo1():
                                 'phone': phone,
                                 'pa': paa
                             })
+
+@users_bp.route("/onlyReg", methods=["get"])
+async def onlyReg():
+    phone = request.args.to_dict().get('phone')
+    conn = aiohttp.TCPConnector(ssl=False)
+    async with aiohttp.ClientSession(connector=conn) as session:
+        # 隧道域名:端口号
+        tunnel = "n329.kdltps.com:15818"
+        # 用户名和密码方式
+        username = "t12500186395313"
+        password = "2yjlyt0b"
+        proxy_auth = aiohttp.BasicAuth(username, password)
+        async with session.get('https://ai.app.taxplus.cn/api/getParams', headers={
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'X-Requested-With': 'XMLHttpRequest',
+            'referer': 'https://ai.taxplus.cn/login/register.html',
+            'origin': 'https://ai.taxplus.cn',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
+        }, proxy="http://" + tunnel, proxy_auth=proxy_auth) as resp:
+            result = await resp.json()
+            key = result['data']['key']
+            img = result['data']['img']
+            async with session.post('http://118.25.16.65:8000/', json={
+                "img": img
+            }) as resp1:
+                value = await resp1.text()
+                async with session.post('https://ai.taxplus.cn/send/register_send.html', data={
+                    "key": key,
+                    "value": json.loads(value)['result'],
+                    "name": phone
+                }, headers={
+                    'Accept': 'application/json, text/javascript, */*; q=0.01',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'referer': 'https://ai.taxplus.cn/login/register.html',
+                    'origin': 'https://ai.taxplus.cn',
+                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+                }, proxy="http://" + tunnel, proxy_auth=proxy_auth) as resp2:
+                    result_ = await resp2.text()
+                    print(result_)
+                    return r(code=200,data=result_)
