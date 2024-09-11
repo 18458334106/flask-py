@@ -287,8 +287,3 @@ def sendEmailMsg():
 
     server.sendmail('2418671097@qq.com', email, message.as_string())
     return r(code=200, msg='success', data=None)
-
-@users_bp.route('/list_schedule', methods=['GET'])
-def list_schedule():
-    response = supabase.table('users').select('*').execute()
-    return r(code=200,data=response.data)
