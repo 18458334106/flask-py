@@ -2,21 +2,15 @@ from flask import Flask
 from flask_cors import CORS
 from utils.entity import r
 from api.users import users_bp
-import requests
-# from api.message.message import user_message_bp
-# from api.examples.examples import examples_bp
 from api.chat import socketio,chat_bp
 from utils.swagger import Swagger
 from flask_jwt_extended import JWTManager
 from flask_apscheduler import APScheduler
-from utils.sql import supabase
 
 # 创建 Flask 实例
 app = Flask(__name__)
 app.register_blueprint(users_bp)
-# app.register_blueprint(user_message_bp)
 app.register_blueprint(chat_bp)
-# app.register_blueprint(examples_bp)
 
 CORS(app, supports_credentials=True,resources=r'/*')
 app.config['JWT_SECRET_KEY'] = 'focusInYou' #jwt密钥 可自定义
@@ -40,7 +34,6 @@ def unauthorized_callback(error):
     return r(code=401, msg='您还未登陆')
 
 if __name__ == '__main__':
-    # app.run(debug=True)
     scheduler = APScheduler()
     scheduler.init_app(app)
     scheduler.start()
