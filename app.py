@@ -3,7 +3,7 @@ from flask_cors import CORS
 from utils.entity import r
 from api.users import users_bp
 from api.chat import socketio,chat_bp
-from api.cron_users import cron_users
+from api.hack import hack_bp
 from utils.swagger import Swagger
 from flask_jwt_extended import JWTManager
 from flask_apscheduler import APScheduler
@@ -12,7 +12,7 @@ from flask_apscheduler import APScheduler
 app = Flask(__name__)
 app.register_blueprint(users_bp)
 app.register_blueprint(chat_bp)
-app.register_blueprint(cron_users)
+app.register_blueprint(hack_bp)
 
 CORS(app, supports_credentials=True,resources=r'/*')
 app.config['JWT_SECRET_KEY'] = 'focusInYou' #jwt密钥 可自定义

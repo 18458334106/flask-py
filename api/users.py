@@ -2,8 +2,8 @@ from utils.sql import supabase
 from flask import Blueprint, request
 from utils.entity import r
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-import aiohttp, json, requests
-import smtplib,re
+import aiohttp, json
+import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 
@@ -236,6 +236,16 @@ async def sendMsg():
                     code_ = await resp2.json()
                     return r(code=200, data=code_)
 
+@users_bp.route('/crons',methods=['GET'])
+def crons():
+    """用户表定时任务
+        ---
+        tags:
+          -  用户
+    """
+    response = supabase.table('users').select('*').execute()
+    print('User 定时任务',response.data)
+    return r(code=200,data=response.data)
 
 @users_bp.route('/sendEmailMsg', methods=['GET'])
 def sendEmailMsg():
