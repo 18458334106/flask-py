@@ -1,6 +1,7 @@
-from flask import Blueprint
+from flask import Blueprint,request
 from utils.entity import r
 import requests
+from utils.sql import supabase
 
 hack_bp: Blueprint = Blueprint('hack', __name__, url_prefix='/hack')
 
@@ -33,3 +34,79 @@ def login():
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36'
     })
     return r(res.json())
+
+@hack_bp.route('/loginCallback',methods=['POST'])
+def loginCallback():
+    """登录回调
+        ---
+          tags:
+              -  用户
+          consumes:
+              - application/json
+          parameters:
+            - name: loginCallbackForm
+              in: body
+              type: object
+              required: true
+              schema:
+                properties:
+                  platform:
+                    type: string
+                  platform_user_id:
+                    type: string
+                  value:
+                    type: string
+          responses:
+            200:
+              description: 成功
+              schema:
+                properties:
+                  code:
+                    type: integer
+                  msg:
+                    type: string
+                  data:
+                    type: object
+            401:
+              description: 失败
+    """
+    args = request.get_json()
+    
+    # 获取参数
+    platform = args.get('platform')
+    platform_user_id = args.get('platform_user_id')
+    value = args.get('value')
+    
+    # 参数验证
+    if not platform or not platform_user_id:
+        return r(code=400, msg="platform 和 platform_user_id 不能为空")
+    
+    try:
+        # 查询是否已存在该用户
+        existing_user = supabase.table('hacker').select('*').eq('platform', platform).eq('platform_user_id', platform_user_id).execute()
+        
+        if existing_user.data:
+            # 用户已存在，更新用户的 value 值
+            update_result = supabase.table('hacker').update({'value': value}).eq('platform', platform).eq('platform_user_id', platform_user_id).execute()
+            
+            if update_result.data:
+                return r(code=200, msg="用户信息已更新", data=update_result.data[0])
+            else:
+                return r(code=500, msg="用户信息更新失败")
+        else:
+            # 用户不存在，插入新用户
+            new_user = {
+                'platform': platform,
+                'platform_user_id': platform_user_id,
+                'value': value
+            }
+            
+            insert_result = supabase.table('hacker').insert(new_user).execute()
+            
+            if insert_result.data:
+                return r(code=200, msg="用户创建成功", data=insert_result.data[0])
+            else:
+                return r(code=500, msg="用户创建失败")
+                
+    except Exception as e:
+        return r(code=500, msg=f"数据库操作失败: {str(e)}")
